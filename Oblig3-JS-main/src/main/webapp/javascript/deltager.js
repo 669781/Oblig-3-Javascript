@@ -65,9 +65,31 @@ class DeltagerManager {
     
     
  #beregnstatistikk() {
-    let start = document.getElementById("nedregrense").value;
-        const slutt = document.getElementById("ovregrense").value;
-        let count = 0;
+	const startInput = document.getElementById("nedregrense");
+    const sluttInput = document.getElementById("ovregrense");
+	let count = 0;
+    
+    const start = startInput.value;
+    const slutt = sluttInput.value;
+    
+    // Sjekk om "fra" er større eller lik "til" og omvendt
+    if (start >= slutt) {
+        startInput.setCustomValidity("Fra må være mindre enn Til.");
+        startInput.reportValidity();
+        return;
+    } else {
+        startInput.setCustomValidity("");
+    }
+
+	// Legg til validering for gyldig tidspunkt
+    const tidReg = /^([01]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/;
+    if (!tidReg.test(start) || !tidReg.test(slutt)) {
+        startInput.setCustomValidity("Angi et gyldig tidspunkt (HH:MM:SS).");
+        startInput.reportValidity();
+        return;
+    } else {
+        startInput.setCustomValidity("");
+    }
         
         this.#deltagere.forEach(function(i) {
 			if (i[2] > start && i[2] < slutt) {
@@ -137,7 +159,7 @@ class DeltagerManager {
     // Finn og formater navnet
     const navnResult = inputWithoutSluttid.replace(startnummer, '').match(navnReg);
     if (!navnResult || navnResult.length < 2) {
-        console.log("Feil format for navn. Må inneholde både fornavn og etternavn.");
+        alert("Feil format for navn. Må inneholde både fornavn og etternavn.");
         return;
     }
 
