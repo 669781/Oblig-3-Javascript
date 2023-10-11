@@ -91,61 +91,88 @@ class DeltagerManager {
 
 
      
-    #registrerdeltager() {
-	    const tidReg = /\d{0,2}:\d{0,2}:\d{0,2}/;
-	    const startnummerReg = /\d{1,3}/;
-	    const navnReg = /\p{L}{2,}(?:-\p{L}{2,})?/gu;
-	
-	    let inputText = this.#regElm.getElementsByTagName("input")[0].value;
-	
-	    // Finn sluttid
-	    const sluttidResult = inputText.match(tidReg);
-	    let sluttid = sluttidResult[0];
-	    sluttid = this.#FTS(sluttid);
-	    if (sluttid == "00:00:00") {
-			console.log("Sluttid må være større enn 0");
-			return;
-		}
-	
-	    // Fjern sluttid fra input
-	    const inputWithoutSluttid = inputText.replace(sluttid, '');
-	
-	    // Finn de resterende dataene
-	    const startnummerResult = inputWithoutSluttid.match(startnummerReg);
-	    if (!startnummerResult) {
-	        console.log('Feil format for startnummer.' + startnummerResult);
-	        return;
-	    }
-	    const startnummer = startnummerResult[0];
-	
-	    const navnResult = inputWithoutSluttid.replace(startnummer, '').match(navnReg);
-	    if (!navnResult) {
-	        console.log("Feil format for navn.");
-	        return;
-	    }
-	    let navn = navnResult[0];
-	    for (let i = 1; i < navnResult.length; i++) {
-			navn += " " + navnResult[i];
-		}
-	
-	    const deltagerInfo = [startnummer, navn, sluttid]
-	
-	    // Her kan du gjøre hva du vil med deltagerInfo, for eksempel legge den til i en liste eller sende den til serveren.
-	    console.log(deltagerInfo);
-	    this.#deltagere.push(deltagerInfo)
-		console.log(this.#deltagere);
+#registrerdeltager() {
+    const tidReg = /\d{0,2}:\d{0,2}:\d{0,2}/;
+    const startnummerReg = /\d{1,3}/;
+    const navnReg = /\p{L}{2,}(?:-\p{L}{2,})?/gu;
+
+    let inputText = this.#regElm.getElementsByTagName("input")[0].value;
+
+    // Sjekk om det er mer enn ett startnummer i teksten
+    const startnummerMatches = inputText.match(startnummerReg);
+    if (startnummerMatches && startnummerMatches.length > 1) {
+        alert("Angi kun ett enkelt startnummer.");
 		
-		// Sette korteste tid
-		let kortest = "99:99:99";
-		this.#deltagere.forEach(function(i) {
-			if (i[2] < kortest) {
-				kortest = i[2];
-			}
-		})
-		let regres = document.getElementById("regres").classList.remove("hidden");
-		let res = document.getElementById("res");
-		res.innerText = kortest;
-	}
+        return;
+    }
+
+    // Finn sluttid
+    const sluttidResult = inputText.match(tidReg);
+    let sluttid = sluttidResult[0];
+    sluttid = this.#FTS(sluttid);
+    if (sluttid == "00:00:00") {
+        alert("Sluttid må være større enn 0");
+        return;
+    }
+
+    // Fjern sluttid fra input
+    const inputWithoutSluttid = inputText.replace(sluttid, '');
+
+    // Finn de resterende dataene
+    const startnummerResult = inputWithoutSluttid.match(startnummerReg);
+    if (!startnummerResult) {
+        alert('Feil format for startnummer.');
+		
+        return;
+    }
+    const startnummer = startnummerResult[0];
+
+    // Sjekk om startnummeret allerede er i bruk
+    if (this.#deltagere.some(deltager => deltager[0] === startnummer)) {
+        alert(`Startnummer ${startnummer} er allerede i bruk. Prøv igjen med et annet startnummer.`);
+		return;
+    }
+	
+
+    // Finn og formater navnet
+    const navnResult = inputWithoutSluttid.replace(startnummer, '').match(navnReg);
+    if (!navnResult || navnResult.length < 2) {
+        console.log("Feil format for navn. Må inneholde både fornavn og etternavn.");
+        return;
+    }
+
+    let navn = navnResult.map(name => {
+        return name[0].toUpperCase() + name.slice(1).toLowerCase();
+    }).join(" ");
+
+    if (navnResult.length === 2) {
+        const fornavn = navnResult[0].toLowerCase();
+        const etternavn = navnResult[1].toLowerCase();
+        if (fornavn === etternavn) {
+            alert("Feil format for navn. Fornavn og etternavn kan ikke være identiske.");
+            return;
+        }
+    }
+
+    const deltagerInfo = [startnummer, navn, sluttid];
+
+    // Her kan du gjøre hva du vil med deltagerInfo, for eksempel legge den til i en liste eller sende den til serveren.
+    console.log(deltagerInfo);
+    this.#deltagere.push(deltagerInfo);
+    console.log(this.#deltagere);
+
+    // Sette korteste tid
+    let kortest = "99:99:99";
+    this.#deltagere.forEach(function(i) {
+        if (i[2] < kortest) {
+            kortest = i[2];
+        }
+    });
+    let regres = document.getElementById("regres").classList.remove("hidden");
+    let res = document.getElementById("res");
+    res.innerText = kortest;
+}
+
 
 
     // Fyll inn evt. hjelpemetoder
