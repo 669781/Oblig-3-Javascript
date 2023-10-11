@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="no">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="Author" content="Oskar, Niklas, Didrik" />
+    <link rel="icon" href="data:," />
+
+    <script defer src="javascript/deltager.js"></script>
+    <title>Deltagerprogram</title>
+    <link href="lab3.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+    <h1>Deltagerhåndtering</h1>
+
+    <div id="root">
+        <fieldset class="registrering">
+            <legend>Registrer deltager</legend>
+            <div class="input">
+                <input type="text" placeholder="Fyll inn data for deltager" autocomplete="off" autofocus size="40">
+                <button type="button">Registrer deltager</button>
+            </div>
+            <div id = "regres" class="hidden resultat">Beste tid til nå er <span id = "res"></span>.</div>
+        </fieldset>
+
+        <fieldset class="deltager">
+            <legend>Finn deltager</legend>
+            <div class="input">
+                <input type="number" autocomplete="off" min="1" max="999">
+                <button type="button">Finn deltager</button>
+            </div>
+            <dl id = "fin" class="hidden resultatok">
+                <dt>Startnummer</dt>
+                <dd id = "nr"></dd>
+                <dt>Navn</dt>
+                <dd id = "navn"></dd>
+                <dt>Tid</dt>
+                <dd id = "tid"></dd>
+            </dl>
+            <p id = "resman" class="hidden resultatmangler">Ingen deltager funnet.</p>
+        </fieldset>
+
+        <fieldset class="statistikk">
+            <legend>Statistikk</legend>
+            <div class="input">
+                <label for="nedregrense">Fra: </label><input type="time" id="nedregrense" step="1">
+                <label for="ovregrense">Til: </label><input type="time" id="ovregrense" step="1">
+
+                <button type="button">Finn antall</button>
+            </div>
+            <p id = "fantclass" class="hidden resultat">Fant <span id = "fant"></span> deltagere i intervallet <span id = "fantstart"></span> til <span id = "fantslutt"></span>.</p>
+        </fieldset>
+    </div>
+</body>
+
+</html>
